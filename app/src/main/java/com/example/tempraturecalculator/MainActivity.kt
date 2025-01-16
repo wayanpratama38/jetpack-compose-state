@@ -15,6 +15,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -73,6 +74,13 @@ private fun CelciusToFahrenheit(celcius:String) : String{
     }.toString()
 }
 
+private fun FahrenheitToCelcius(fahrenheit : String) : String{
+    return fahrenheit.toDoubleOrNull()?.let {
+        (it - 32) * 5 / 9
+    }.toString()
+}
+
+
 // Stateless State Child
 @Composable
 fun StatelessTempratureInput(
@@ -120,6 +128,63 @@ fun ConverterApp(
 }
 
 
+enum class Scale(val scaleName : String){
+    CELCIUS("Celcius"),
+    FAHRENHEIT("Fahrenheit")
+}
+
+@Composable
+fun GeneralTemperatureInput(
+    input: String,
+    scale: Scale,
+    onValueChange: (String) -> Unit,
+    modifier: Modifier = Modifier
+){
+    Column(
+        modifier
+    ) {
+        OutlinedTextField(
+            value = input,
+            label = { Text(stringResource(R.string.enter_temperature,scale.scaleName)) },
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+            onValueChange = onValueChange
+        )
+    }
+}
+
+@Composable
+fun TwoWayConverter(
+    modifier: Modifier = Modifier
+){
+    var celcius by remember { mutableStateOf("") }
+    var fahrenheit by remember { mutableStateOf("") }
+    Column (
+        modifier = modifier.padding(16.dp)
+    ) {
+        Text(
+            text = stringResource(R.string.two_way_converter),
+            style = MaterialTheme.typography.headlineSmall
+        )
+        GeneralTemperatureInput(
+            scale = Scale.CELCIUS,
+            input = "",
+            onValueChange = { newInput->
+                celcius = newInput
+                fahrenheit = CelciusToFahrenheit(newInput)
+
+            }
+        )
+        GeneralTemperatureInput(
+            scale = Scale.FAHRENHEIT,
+            input = "",
+            onValueChange = { newInput->
+                fahrenheit = newInput
+                celcius = FahrenheitToCelcius(newInput)
+            }
+        )
+    }
+}
+
 @Preview(showBackground = true, device = Devices.PIXEL_4)
 @Composable
 fun GreetingPreview() {
@@ -129,6 +194,7 @@ fun GreetingPreview() {
         ) {
             StatefulTempratureInput()
             ConverterApp()
+            TwoWayConverter()
         }
 
     }
