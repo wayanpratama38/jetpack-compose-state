@@ -37,6 +37,8 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     StatefulTempratureInput()
+                    ConverterApp()
+                    TwoWayConverter()
                 }
             }
         }
@@ -167,7 +169,7 @@ fun TwoWayConverter(
         )
         GeneralTemperatureInput(
             scale = Scale.CELCIUS,
-            input = "",
+            input = celcius,
             onValueChange = { newInput->
                 celcius = newInput
                 fahrenheit = CelciusToFahrenheit(newInput)
@@ -176,7 +178,7 @@ fun TwoWayConverter(
         )
         GeneralTemperatureInput(
             scale = Scale.FAHRENHEIT,
-            input = "",
+            input = fahrenheit,
             onValueChange = { newInput->
                 fahrenheit = newInput
                 celcius = FahrenheitToCelcius(newInput)
