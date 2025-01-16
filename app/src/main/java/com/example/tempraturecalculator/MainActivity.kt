@@ -42,6 +42,7 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+// Stateful State
 @Composable
 fun StatefulTempratureInput(
     modifier : Modifier = Modifier
@@ -72,10 +73,63 @@ private fun CelciusToFahrenheit(celcius:String) : String{
     }.toString()
 }
 
+// Stateless State Child
+@Composable
+fun StatelessTempratureInput(
+    input : String,
+    output : String,
+    onValueChange: (String) -> Unit,
+    modifier: Modifier = Modifier
+){
+    Column (
+        modifier = modifier.padding(16.dp)
+    ) {
+        Text(
+            text = stringResource(R.string.stateless_converter),
+            style = MaterialTheme.typography.headlineSmall
+        )
+        OutlinedTextField(
+            value = input,
+            label = { Text(stringResource(R.string.enter_celsius)) },
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+            onValueChange = onValueChange,
+        )
+        Text(stringResource(R.string.temperature_fahrenheit,output))
+    }
+}
+
+// Parent dari Stateless
+@Composable
+fun ConverterApp(
+    modifier: Modifier = Modifier
+){
+    var input by remember { mutableStateOf("") }
+    var output by remember { mutableStateOf("") }
+    Column(
+        modifier
+    ) {
+        StatelessTempratureInput(
+            input = input,
+            output = output,
+            onValueChange = {newInput->
+                input = newInput
+                output = CelciusToFahrenheit(newInput)
+            }
+        )
+    }
+}
+
+
 @Preview(showBackground = true, device = Devices.PIXEL_4)
 @Composable
 fun GreetingPreview() {
     TempratureCalculatorTheme {
-        StatefulTempratureInput()
+        Column(
+            modifier = Modifier.padding(8.dp)
+        ) {
+            StatefulTempratureInput()
+            ConverterApp()
+        }
+
     }
 }
