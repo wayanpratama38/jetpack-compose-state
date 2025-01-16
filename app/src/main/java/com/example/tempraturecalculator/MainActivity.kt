@@ -14,6 +14,10 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
@@ -42,8 +46,8 @@ class MainActivity : ComponentActivity() {
 fun StatefulTempratureInput(
     modifier : Modifier = Modifier
 ){
-    var input = ""
-    var output = ""
+    var input by remember{ mutableStateOf("") }
+    var output by remember{ mutableStateOf("") }
     Column(modifier.padding(16.dp)){
         Text(
             text = stringResource(R.string.stateful_converter),
@@ -53,10 +57,19 @@ fun StatefulTempratureInput(
             value = input,
             label = { Text(stringResource(R.string.enter_celsius)) },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-            onValueChange = {},
+            onValueChange = {newInput ->
+                input = newInput
+                output = CelciusToFahrenheit(newInput)
+            },
         )
         Text(stringResource(R.string.temperature_fahrenheit,output))
     }
+}
+
+private fun CelciusToFahrenheit(celcius:String) : String{
+    return celcius.toDoubleOrNull()?.let {
+        (it * 9 / 5) + 32
+    }.toString()
 }
 
 @Preview(showBackground = true, device = Devices.PIXEL_4)
